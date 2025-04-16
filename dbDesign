@@ -1,0 +1,40 @@
+Job Seekers
+1. Job Portal System
+Users: Job Seekers & Employers
+
+Employers can post jobs, search resumes.
+
+Job Seekers can apply to jobs, upload resume.
+
+Use permissions to separate views/actions for job seekers & employers.
+
+Add email notifications for job application status.
+
+Extra: Show jobs using API, maybe integrate LinkedIn Jobs API.
+
+
+Modellllllll
+
+User
+    name
+    email
+    user_type -> seeker/employer
+    password
+
+Seeker
+    name
+    email
+    linkedin
+    resume
+    photo
+
+Employer
+    company_name
+    job_post
+    job_description
+    job_status -> open/closed
+    company_link
+    salary_range
+    job_type -> full/part-time
+    
+
