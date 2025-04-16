@@ -7,6 +7,9 @@ from .serializers import ApplySerializer, JobSerializer
 
 def home(request):
     return render(request, 'job_app/home.html')
+def job(request):
+    jobs = Job.objects.all()
+    return render(request, 'job_app/job.html',{'jobs':jobs})
 
 class ApplyViewSet(ModelViewSet):
     queryset = Apply.objects.all()
