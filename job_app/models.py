@@ -10,7 +10,7 @@ class User(AbstractUser):
     ]
     username = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
-    avatar = models.ImageField(upload_to='avatars/', default = 'images/avatar.svg')
+    avatar = models.ImageField(upload_to='images/avatars/', default = 'images/avatar.svg')
     user_type = models.CharField(
         max_length = 2,
         choices = TYPE_CHOICES,
@@ -43,6 +43,9 @@ class Apply(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.user} applied"
     
     
 class Job(models.Model):
