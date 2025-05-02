@@ -1,6 +1,6 @@
 
 from django.urls import path, include
-from job_app.views import ApplyViewSet, JobViewSet ,home,job, company
+from job_app.views import ApplyViewSet, JobViewSet ,home,job, company,job_detail
 
 urlpatterns = [
 
@@ -8,4 +8,5 @@ urlpatterns = [
     path('',home, name='home'),
     path('jobs/',job, name='job'),
     path('companies/',company, name='company'),
+    path('job-detail/',job_detail, name='job_detail'),
 ]
