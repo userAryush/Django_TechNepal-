@@ -9,6 +9,7 @@ def home(request):
     return render(request, 'job_app/home.html')
 def job(request):
     jobs = Job.objects.all()
+ 
     return render(request, 'job_app/job.html',{'jobs':jobs})
 def job_detail(request):
     jobs = Job.objects.all()
@@ -24,3 +25,4 @@ class ApplyViewSet(ModelViewSet):
 class JobViewSet(ModelViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
+

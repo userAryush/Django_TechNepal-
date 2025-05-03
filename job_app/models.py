@@ -26,6 +26,7 @@ class Company(models.Model):
     company_description = models.TextField(blank=True, null=True)
     location = models.CharField(max_length=200)
     company_link = models.URLField(blank=True, null=True)
+    Company_picture = models.ImageField(default="images/company_default.png")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)    
@@ -65,6 +66,7 @@ class Job(models.Model):
     job_status = models.CharField(max_length=1,choices=STATUS_CHOICES)
     salary_range = models.CharField(max_length=100)
     job_type=models.CharField(max_length=1,choices=JOB_TYPE_CHOICES)
+    post_logo = models.ImageField(default = "images/job_default.jpg")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
