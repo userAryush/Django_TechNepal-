@@ -1,9 +1,52 @@
 {% extends "layout.html" %}
 
+
 {% block title %}
 Job Description
 {% endblock %}  
 {% block content %}
-<h1>{{ job.job_post }}</h1>
+<h1><img src={{ jobs.post_logo.url }} alt="Job Post" height=140 width=140>{{ jobs.job_post }}   <button type="button" class="btn btn-success">Apply</button></h1>
+
+
+<div class="row">
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <strong>Status:</strong> {{ jobs.get_job_status_display }}<br>
+                <strong>{{ jobs.salary_range }}</strong> <br>
+                <strong>{{ jobs.company }}</strong> <br>
+                <strong>{{ jobs.get_job_type_display }} job</strong> <br>
+    <br>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <br>
+                    <h3>About Job</h3>
+                    <p>{{  jobs.job_description }}</p>
+                    <h3>Responsiibilities</h3>
+                    <p>{{ jobs.job_responsibility }}</p>
+                
+                    <h3>Requirements</h3>
+                    {% for requirement in jobs.requirements %}
+                        <ul>
+                            <li>{{ requirement }}</li>
+                
+                        </ul>
+                
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
 
 {% endblock %}

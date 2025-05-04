@@ -11,9 +11,9 @@ def job(request):
     jobs = Job.objects.all()
  
     return render(request, 'job_app/job.html',{'jobs':jobs})
-def job_detail(request):
-    jobs = Job.objects.all()
-    return render(request, 'job_app/detailsjob.html',{'jobs':jobs})
+def job_detail(request, pk):
+    jobs = Job.objects.get(pk=pk)
+    return render(request, 'job_app/details_job.html',{'jobs':jobs})
 def company(request):
     companies = Company.objects.all()
     return render(request, 'job_app/company.html',{'companies':companies})
