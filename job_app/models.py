@@ -44,17 +44,7 @@ class Company(models.Model):
     
     
     
-class Apply(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    linkedin = models.URLField(blank=True, null=True)
-    resume = models.FileField(upload_to='resumes/')
-    
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"{self.user} applied"
+
     
     
 class Job(models.Model):
@@ -68,7 +58,7 @@ class Job(models.Model):
         ('R', 'Remote'),
         ('I', 'Internship')
     ]
-    company = models.ForeignKey('Company', on_delete=models.SET_NULL,null=True,blank=True,default="Not Mentioned")
+    company = models.ForeignKey('Company', on_delete=models.SET_NULL,null=True,blank=True)
     job_post = models.CharField(max_length=100)
     job_description = models.TextField()
     job_status = models.CharField(max_length=1,choices=STATUS_CHOICES)
@@ -84,3 +74,19 @@ class Job(models.Model):
     def __str__(self):
         return self.job_post
     
+class Apply(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, default=1)  
+    email = models.EmailField(max_length=200,default="email@gmail.com")
+    linkedin = models.URLField(blank=True, null=True)
+    portfolio_link = models.URLField(blank=True, null=True)
+    resume = models.FileField(upload_to='resumes/')
+    address = models.CharField(max_length =200, default="address")
+    full_name = models.CharField(max_length=300, default="fullname")
+    
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user} applied for {self.job}"

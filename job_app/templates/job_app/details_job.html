@@ -5,7 +5,7 @@
 Job Description
 {% endblock %}  
 {% block content %}
-<h1><img src={{ jobs.post_logo.url }} alt="Job Post" height=140 width=140>{{ jobs.job_post }}   <button type="button" class="btn btn-success">Apply</button></h1>
+<h1><img src={{ jobs.post_logo.url }} alt="Job Post" height=140 width=140>{{ jobs.job_post }}   <a href="{% url "job_apply" job_id=jobs.id %}"><button type="button" class="btn btn-success">Apply</button></a></h1>
 
 
 <div class="row">
