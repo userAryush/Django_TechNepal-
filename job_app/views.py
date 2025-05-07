@@ -35,6 +35,9 @@ def job_apply(request, job_id):
 def company(request):
     companies = Company.objects.all()
     return render(request, 'job_app/company.html',{'companies':companies})
+def company_detail(request, company_id):
+    companies = Company.objects.get(pk = company_id)
+    return render(request, 'job_app/company_detail.html',{'companies':companies})
 
 class ApplyViewSet(ModelViewSet):
     queryset = Apply.objects.all()

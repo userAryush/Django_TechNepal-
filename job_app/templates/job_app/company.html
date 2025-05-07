@@ -15,13 +15,16 @@ Job_seek
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">{{ company.company_name }}</h5>
+                    <strong>{{ company.main_service }}</strong>
                     
                     <p class="card-text">
-                        <strong>Description:</strong> {{ company.company_description }}<br>
-                        <strong>Location:</strong> {{ company.location }}<br>
-                        <strong>Link:</strong> <a href="{{ company.company_link }}">{{ company.company_link }}</a>
+                        <br>
+                        {{ company.motto }}<br>
+                        {{ company.location }}<br>
+                        {{ company.size }}<br>
+                        
                     </p>
-                    <a href="" class="btn btn-primary">View Details</a>
+                    <a href="{% url "company_detail" company_id=company.id %} " class="btn btn-primary">View Details</a>
                 </div>
             </div>
         </div>

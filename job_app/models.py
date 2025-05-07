@@ -89,4 +89,9 @@ class Apply(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user} applied for {self.job}"
+        return f"{self.full_name} applied for {self.job}"
+    
+    class Meta:
+        constraints =[
+            models.UniqueConstraint(fields=("user","job"), name="unique_apply")
+        ]
