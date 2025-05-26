@@ -5,7 +5,7 @@
 About {{ companies.company_name }}
 {% endblock %}  
 {% block content %}
-<h1><img src={{ jobs.post_logo.url }} ></h1>
+<h1><img src={{ companies.company_picture.url }} ></h1>
 
 
 <div class="row">
@@ -13,14 +13,29 @@ About {{ companies.company_name }}
     <div class="col-md-6 mb-4">
         <div class="card shadow-sm">
             <div class="card-body">
-                <strong>Status:</strong> {{ jobs.get_job_status_display }}<br>
-                <strong>{{ jobs.salary_range }}</strong> <br>
-                <strong>{{ jobs.company }}</strong> <br>
-                <strong>{{ jobs.get_job_type_display }} job</strong> <br>
+                <h2><strong>{{ companies.company_name }}</strong></h2>
+                <h5><i>{{ companies.main_service }}</i></h5> <br>
+                <p>{{ companies.motto }}</p> <br>
+                {{ companies.company_size }} team members <br>
     <br>
             </div>
         </div>
     </div>
+
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3><strong>Contact Information</strong></h3><br>
+                <strong>Founder </strong>{{ companies.founder }} <br>
+                <strong>Founded </strong>{{ companies.founded }} <br>
+                {{ companies.location }}  <br>
+                <a href="{{ companies.company_link }}">Visit Company Website</a> <br>
+    <br>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -30,15 +45,14 @@ About {{ companies.company_name }}
             <div class="card shadow-sm">
                 <div class="card-body">
                     <br>
-                    <h3>About Job</h3>
-                    <p>{{  jobs.job_description }}</p>
-                    <h3>Responsiibilities</h3>
-                    <p>{{ jobs.job_responsibility }}</p>
+                    <h3>About Company</h3>
+                    <p>{{  companies.company_description }}</p>
+             
                 
-                    <h3>Requirements</h3>
-                    {% for requirement in jobs.requirements %}
+                    <h3>Services</h3>
+                    {% for service in companies.services %}
                         <ul>
-                            <li>{{ requirement }}</li>
+                            <li>{{ service }}</li>
                 
                         </ul>
                 

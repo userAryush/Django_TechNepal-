@@ -12,7 +12,7 @@ class User(AbstractUser):
     ]
     username = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
-    avatar = models.ImageField(upload_to='images/avatars/', default = 'images/avatar.svg')
+    avatar = models.ImageField(default = 'avatar.svg')
     user_type = models.CharField(
         max_length = 2,
         choices = TYPE_CHOICES,
@@ -24,7 +24,10 @@ class User(AbstractUser):
     
     
 class Company(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'E'}, default=1)
     company_name = models.CharField(max_length=250)
+    company_email = models.EmailField(max_length=200,unique=True,default="Put your company email")
+    company_id=models.IntegerField(unique=True,default=1)
     main_service = models.CharField(max_length=200, default="IT Service")
     founder = models.CharField(max_length=400, default="Aryush Khatri")
     founded = models.DateField(null=True, blank=True)
@@ -51,6 +54,7 @@ class Job(models.Model):
     STATUS_CHOICES = [
         ('O', 'Open'),
         ('C', 'Closed'),
+        ('P', 'Pending')
     ]
     JOB_TYPE_CHOICES = [
         ('F', 'Full-time'),
@@ -75,7 +79,7 @@ class Job(models.Model):
         return self.job_post
     
 class Apply(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     job = models.ForeignKey(Job, on_delete=models.CASCADE, default=1)  
     email = models.EmailField(max_length=200,default="email@gmail.com")
     linkedin = models.URLField(blank=True, null=True)
@@ -91,7 +95,5 @@ class Apply(models.Model):
     def __str__(self):
         return f"{self.full_name} applied for {self.job}"
     
-    class Meta:
-        constraints =[
-            models.UniqueConstraint(fields=("user","job"), name="unique_apply")
-        ]
+
+        
