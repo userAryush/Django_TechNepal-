@@ -1,8 +1,9 @@
-{% extends "main.html" %}
+{% extends "bootstrap.html" %}
+{% load static %}
+{% block title %}Login{% endblock %}
 {% block content %}
-    {% load static %}
-    <div class="center-container">
-        <form id="loginForm" class="login-form">
+<div class="center-container">
+    <form class="login-form">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -38,6 +39,6 @@
         </form>
     </div>
 
-    {% include "vote/forgot_password.html" %}
-    <script src="{% static 'js/custom/login.js' %}"></script>
+    {% include "job_app/forgot_password.html" %}
+    <script src="{% static 'js/login.js' %}"></script>
 {% endblock content %}

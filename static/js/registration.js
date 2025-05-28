@@ -3,13 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("voterForm");
 
     const userPhotoInput = document.getElementById("userPhotoUpload");
-    const voterCardInput = document.getElementById("voterCardUpload");
-
     const userPhotoPreview = document.getElementById("userPhotoPreview");
-    const voterCardPreview = document.getElementById("voterCardPreview");
 
-    const photoDropAreas = document.querySelectorAll("#drop-area");
-    const clickToBrowseLinks = document.querySelectorAll("#clickToBrowse");
+    const photoDropArea = document.getElementById("drop-area");
+    const clickToBrowse = document.getElementById("clickToBrowse");
 
     // === Constants ===
     const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
@@ -44,39 +41,36 @@ document.addEventListener("DOMContentLoaded", function () {
         reader.readAsDataURL(file);
     }
 
-    // === Event Listeners for Click to Browse ===
-    clickToBrowseLinks[0].addEventListener("click", () => userPhotoInput.click());
-    clickToBrowseLinks[1].addEventListener("click", () => voterCardInput.click());
+    // === Click to Browse ===
+    if (clickToBrowse) {
+        clickToBrowse.addEventListener("click", () => userPhotoInput.click());
+    }
 
-    // === Image Previews ===
+    // === Image Preview on Change ===
     userPhotoInput.addEventListener("change", () => showImagePreview(userPhotoInput, userPhotoPreview));
-    voterCardInput.addEventListener("change", () => showImagePreview(voterCardInput, voterCardPreview));
 
     // === Drag and Drop ===
-    photoDropAreas.forEach((area, index) => {
-        const input = index === 0 ? userPhotoInput : voterCardInput;
-        const preview = index === 0 ? userPhotoPreview : voterCardPreview;
-
-        area.addEventListener("dragover", (e) => {
+    if (photoDropArea) {
+        photoDropArea.addEventListener("dragover", (e) => {
             e.preventDefault();
-            area.classList.add("border-primary");
+            photoDropArea.classList.add("border-primary");
         });
 
-        area.addEventListener("dragleave", () => {
-            area.classList.remove("border-primary");
+        photoDropArea.addEventListener("dragleave", () => {
+            photoDropArea.classList.remove("border-primary");
         });
 
-        area.addEventListener("drop", (e) => {
+        photoDropArea.addEventListener("drop", (e) => {
             e.preventDefault();
-            area.classList.remove("border-primary");
+            photoDropArea.classList.remove("border-primary");
 
             const file = e.dataTransfer.files[0];
             if (file) {
-                input.files = e.dataTransfer.files;
-                showImagePreview(input, preview);
+                userPhotoInput.files = e.dataTransfer.files;
+                showImagePreview(userPhotoInput, userPhotoPreview);
             }
         });
-    });
+    }
 
     // === Form Validation ===
     form.addEventListener("submit", function (e) {
@@ -112,27 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
             showError(username, "Username must be at least 3 characters.");
         if (!email.value.trim() || !isEmailValid(email.value.trim()))
             showError(email, "A valid email is required.");
-        if (!dob.value.trim()) {
-            showError(dob, "Date of Birth is required.");
-        } else {
-            const birthDate = new Date(dob.value);
-            if (isNaN(birthDate.getTime())) {
-                showError(dob, "Please enter a valid date.");
-            } else {
-                const today = new Date();
-                const age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-                const dayDiff = today.getDate() - birthDate.getDate();
-                const isBirthdayPassedThisYear = monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0);
-                const realAge = isBirthdayPassedThisYear ? age : age - 1;
-                if (realAge < 18) {
-                    showError(dob, "You must be at least 18 years old to register.");
-                }
-            }
-        }
+        
 
         if (!userPhotoInput.files.length) showError(userPhotoInput, "User photo is required.");
-        if (!voterCardInput.files.length) showError(voterCardInput, "Voter card image is required.");
 
         if (!isValid) return;
 
@@ -146,11 +122,9 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("lastName", lastName.value.trim());
         formData.append("username", username.value.trim());
         formData.append("email", email.value.trim());
-        formData.append("dob", dob.value.trim());
         formData.append("userPhotoUpload", userPhotoInput.files[0]);
-        formData.append("voterCardUpload", voterCardInput.files[0]);
 
-        fetch("/registration/", {
+        fetch("/user-registration/", {
             method: "POST",
             body: formData,
         })

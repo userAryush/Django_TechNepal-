@@ -21,7 +21,7 @@ from django.contrib.auth import authenticate, login, logout
 
 def user_registration(request):
     if request.method == 'GET':
-        return render(request, 'vote/registration.html')
+        return render(request, 'job_app/user_register.html')
 
     if request.method == 'POST':
         # Collect fields
@@ -30,9 +30,8 @@ def user_registration(request):
         last_name = request.POST.get('lastName', '').strip()
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
-        dob = parse_date(request.POST.get('dob', ''))
+        
         user_photo = request.FILES.get('userPhotoUpload')
-        user_type = request.POST.get('email', '').strip()
 
 
         if User.objects.filter(username=username).exists():
@@ -41,7 +40,7 @@ def user_registration(request):
         if User.objects.filter(email=email).exists():
             return JsonResponse({'status': 'error', 'message': 'Email already exists.'}, status=400)
         # Save uploaded images to static/images/user_image/
-        upload_dir = os.path.join(settings.BASE_DIR, 'static/images/user_image/')
+        upload_dir = os.path.join(settings.BASE_DIR, 'static/user_image/')
         os.makedirs(upload_dir, exist_ok=True)
         fs = FileSystemStorage(location=upload_dir)
 
@@ -59,9 +58,8 @@ def user_registration(request):
             first_name=first_name,
             last_name=last_name,
             middle_name=middle_name,
-            dob=dob,
-            avatar=user_photo_path,
-            user_type=user_type
+            avatar=user_photo_path
+
         )
         # Send welcome email
         subject = "Welcome to Techनेपाल:!"
@@ -77,12 +75,12 @@ def user_registration(request):
         except Exception as e:
             user.delete()  # Rollback user creation if email fails
             return JsonResponse({'status': 'error', 'message': f'Failed to send email to {user.email}: {e}'}, status=500)
-        return JsonResponse({'status': 'success', 'message': 'Registration successful! Check your email for login details.', 'redirect_url': reverse('login_view')})
+        return JsonResponse({'status': 'success', 'message': 'Registration successful! Check your email for login details.', 'redirect_url': reverse('user_log')})
 
 
 def company_registration(request):
     if request.method == 'GET':
-        return render(request, 'vote/registration.html')
+        return render(request, 'job_app/registration.html')
 
     if request.method == 'POST':
         # Collect fields
@@ -105,7 +103,7 @@ def company_registration(request):
         # Check email duplication
         if Company.objects.filter(company_email=company_email).exists():
             return JsonResponse({'status': 'error', 'message': 'Company with this email already exists.'}, status=400)
-        # Save uploaded images to static/images/user_images/
+        # Save uploaded images to static/images/company_picture/
         upload_dir = os.path.join(settings.BASE_DIR, 'static/images/company_picture/')
         os.makedirs(upload_dir, exist_ok=True)
         fs = FileSystemStorage(location=upload_dir)
@@ -130,7 +128,7 @@ def company_registration(request):
             founded=founded,
             company_description=company_description,
             motto=motto,
-            company_description=company_description,
+            
             
             company_size=company_size,
             services=services,
@@ -154,11 +152,11 @@ def company_registration(request):
             "Best regards,\nTechनेपाल: Team"
         )
         try:
-            send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email])
+            send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [company.email])
         except Exception as e:
             company.delete()  # Rollback user creation if email fails
             return JsonResponse({'status': 'error', 'message': f'Failed to send email to {company.company_email}: {e}'}, status=500)
-        return JsonResponse({'status': 'success', 'message': 'Registration successful! Check your email for login details.', 'redirect_url': reverse('login_view')})
+        return JsonResponse({'status': 'success', 'message': 'Registration successful! Check your email for login details.', 'redirect_url': reverse('company_log')})
 
 def login_view_company(request):
     if 'next' in request.GET:
@@ -182,7 +180,7 @@ def login_view_company(request):
             })
         else:
             return JsonResponse({'success': False, 'error': "Invalid credentials."})
-    return render(request, 'vote/login.html')
+    return render(request, 'job_app/user_login.html')
 
 def login_view_user(request):
     if 'next' in request.GET:
@@ -206,7 +204,7 @@ def login_view_user(request):
             })
         else:
             return JsonResponse({'success': False, 'error': "Invalid credentials."})
-    return render(request, 'vote/login.html')
+    return render(request, 'job_app/user_login.html')
 def home(request):
     return render(request, 'job_app/home.html')
 def job(request):
@@ -240,6 +238,8 @@ def company(request):
 def company_detail(request, company_id):
     companies = Company.objects.get(pk = company_id)
     return render(request, 'job_app/company_detail.html',{'companies':companies})
+def forgot_password(request):
+    pass
 
 class ApplyViewSet(ModelViewSet):
     queryset = Apply.objects.all()
