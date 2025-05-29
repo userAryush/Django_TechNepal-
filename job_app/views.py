@@ -16,6 +16,8 @@ from django.utils.dateparse import parse_datetime
 from django.utils.http import urlsafe_base64_decode 
 from .utils import generate_random_password, generate_random_unique_id
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import make_password 
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -26,40 +28,25 @@ def user_registration(request):
     if request.method == 'POST':
         # Collect fields
         first_name = request.POST.get('firstName', '').strip()
-        middle_name = request.POST.get('middleName', '').strip()
         last_name = request.POST.get('lastName', '').strip()
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
-        
-        user_photo = request.FILES.get('userPhotoUpload')
-
-
+        password = request.POST.get('password', '').strip()
+    
         if User.objects.filter(username=username).exists():
             return JsonResponse({'status': 'error', 'message': 'Username already exists.'}, status=400)
         # Check email duplication
         if User.objects.filter(email=email).exists():
             return JsonResponse({'status': 'error', 'message': 'Email already exists.'}, status=400)
-        # Save uploaded images to static/images/user_image/
-        upload_dir = os.path.join(settings.BASE_DIR, 'static/user_image/')
-        os.makedirs(upload_dir, exist_ok=True)
-        fs = FileSystemStorage(location=upload_dir)
-
-        user_photo_name = fs.save(user_photo.name, user_photo)
-
-
-        user_photo_path = f'user_images/{user_photo_name}'
-      
-
-
+        
+        hash_password= make_password(password)
         # Create user
         user = User.objects.create_user(
             username=username,
             email=email,
             first_name=first_name,
             last_name=last_name,
-            middle_name=middle_name,
-            avatar=user_photo_path
-
+            password=password
         )
         # Send welcome email
         subject = "Welcome to Techनेपाल:!"
@@ -67,6 +54,7 @@ def user_registration(request):
             f"Dear {user.first_name} {user.last_name},\n\n"
             f"Your account has been created.\n"
             f"Username: {user.username}\n"
+            
             f"If you have any questions, feel free to reach out.\n\n"
             "Best regards,\nTechनेपाल:! Team"
         )
@@ -75,7 +63,137 @@ def user_registration(request):
         except Exception as e:
             user.delete()  # Rollback user creation if email fails
             return JsonResponse({'status': 'error', 'message': f'Failed to send email to {user.email}: {e}'}, status=500)
-        return JsonResponse({'status': 'success', 'message': 'Registration successful! Check your email for login details.', 'redirect_url': reverse('user_log')})
+        messages.success(request, "User created successfully.")
+        return redirect('user_log')
+def login_view_user(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:
+        
+        if request.method == "POST":
+            email = request.POST.get("email")
+            password = request.POST.get("password")
+            
+            user = authenticate(request, username=email, password=password)
+            if user:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.info(request, "Invalid email or password.")
+
+        return render(request, 'job_app/user_login.html')
+
+
+
+def index(request):
+
+ 
+    return render(request, 'job_app/index.html')
+
+
+@login_required
+def home(request):
+    # checking if the user is authenticated
+    print("Authenticated:", request.user.is_authenticated)
+    print("User:", request.user)
+
+    return render(request, 'job_app/home.html')
+
+@login_required
+def job(request):
+    jobs = Job.objects.all()
+ 
+    return render(request, 'job_app/job.html',{'jobs':jobs})
+
+@login_required
+def job_detail(request, job_id):
+    jobs = Job.objects.get(pk=job_id)
+    return render(request, 'job_app/details_job.html',{'jobs':jobs})
+
+@login_required
+def job_apply(request, job_id):
+    job = get_object_or_404(Job, id=job_id)
+    if request.method == 'POST':
+        user = request.user
+        email = request.POST.get('email')
+        fullname = request.POST.get('fullname')
+        address = request.POST.get('address')
+        portfolio_link = request.POST.get('portfolio')
+        linkedin_link = request.POST.get('linkedin')
+        resume = request.POST.get('resume')
+        
+        Apply.objects.create(user = request.user,job=job,email=email,linkedin = linkedin_link,portfolio_link=portfolio_link, resume=resume,address=address,full_name=fullname)
+        
+        return redirect('job_detail',job_id)
+    
+    
+    return render(request, 'job_app/job_apply.html')
+
+@login_required
+def company(request):
+    companies = Company.objects.all()
+    return render(request, 'job_app/company.html',{'companies':companies})
+
+@login_required
+def company_detail(request, company_id):
+    companies = Company.objects.get(pk = company_id)
+    return render(request, 'job_app/company_detail.html',{'companies':companies})
+def forgot_password(request):
+    pass
+
+class ApplyViewSet(ModelViewSet):
+    queryset = Apply.objects.all()
+    serializer_class = ApplySerializer
+    
+class JobViewSet(ModelViewSet):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
+
+
+@login_required
+def user_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        # Get the new username
+        new_username = request.POST.get('username')
+
+        # Check if the new username already exists in other users
+        if User.objects.filter(username=new_username).exclude(id=user.id).exists():
+            messages.error(request, "This username is already taken by another user.")
+            return redirect('user-profile')
+
+        # Update the user's profile if the username is unique
+        user.username = new_username
+        user.first_name = request.POST.get('first_name')
+        
+        user.last_name = request.POST.get('last_name')
+
+        #Builds the path where uploaded images (avatar, voter ID) will be saved — under static/user_images/
+        upload_dir = os.path.join(settings.BASE_DIR, 'media/user_images/')
+        #Makes sure the directory exists. If not, it creates it.
+        os.makedirs(upload_dir, exist_ok=True)
+        #  Creates a file system handler to save files to that directory.
+        fs = FileSystemStorage(location=upload_dir)
+
+        # Update the avatar 
+        if 'avatar' in request.FILES:
+            avatar_file = request.FILES['avatar']
+            avatar_name = fs.save(avatar_file.name, avatar_file)
+            user.avatar = f'user_images/{avatar_name}'
+
+        
+        user.save()
+        messages.success(request, "Profile updated successfully.")
+        return redirect('home')
+    return render(request, 'job_app/user_profile.html')
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have logged out successfully.')
+    return redirect('index')
+
+
 
 
 def company_registration(request):
@@ -108,12 +226,9 @@ def company_registration(request):
         os.makedirs(upload_dir, exist_ok=True)
         fs = FileSystemStorage(location=upload_dir)
 
-        company_picture_name = fs.save(company_picture.name, company_picture)
-        
-
+        company_picture_name = fs.save(company_picture.name, company_picture)        
         company_picture_path = f'company_picture/{company_picture_name}'
         
-
         # Generate credentials
         generated_password = generate_random_password()
         company_id = generate_random_unique_id()
@@ -181,71 +296,3 @@ def login_view_company(request):
         else:
             return JsonResponse({'success': False, 'error': "Invalid credentials."})
     return render(request, 'job_app/user_login.html')
-
-def login_view_user(request):
-    if 'next' in request.GET:
-        messages.warning(request, 'User should be logged in to view this page.')
-    if request.user.is_authenticated:
-        return redirect("dashboard")
-    if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        try:
-            user = User.objects.get(company_email=email)
-        except User.DoesNotExist:
-            return JsonResponse({'success': False, 'error': "User not found."})
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Login successful.',
-                
-            })
-        else:
-            return JsonResponse({'success': False, 'error': "Invalid credentials."})
-    return render(request, 'job_app/user_login.html')
-def home(request):
-    return render(request, 'job_app/home.html')
-def job(request):
-    jobs = Job.objects.all()
- 
-    return render(request, 'job_app/job.html',{'jobs':jobs})
-def job_detail(request, job_id):
-    jobs = Job.objects.get(pk=job_id)
-    return render(request, 'job_app/details_job.html',{'jobs':jobs})
-
-def job_apply(request, job_id):
-    job = get_object_or_404(Job, id=job_id)
-    if request.method == 'POST':
-        user = request.user
-        email = request.POST.get('email')
-        fullname = request.POST.get('fullname')
-        address = request.POST.get('address')
-        portfolio_link = request.POST.get('portfolio')
-        linkedin_link = request.POST.get('linkedin')
-        resume = request.POST.get('resume')
-        
-        Apply.objects.create(user = request.user,job=job,email=email,linkedin = linkedin_link,portfolio_link=portfolio_link, resume=resume,address=address,full_name=fullname)
-        
-        return redirect('job_detail',job_id)
-    
-    
-    return render(request, 'job_app/job_apply.html')
-def company(request):
-    companies = Company.objects.all()
-    return render(request, 'job_app/company.html',{'companies':companies})
-def company_detail(request, company_id):
-    companies = Company.objects.get(pk = company_id)
-    return render(request, 'job_app/company_detail.html',{'companies':companies})
-def forgot_password(request):
-    pass
-
-class ApplyViewSet(ModelViewSet):
-    queryset = Apply.objects.all()
-    serializer_class = ApplySerializer
-    
-class JobViewSet(ModelViewSet):
-    queryset = Job.objects.all()
-    serializer_class = JobSerializer
-

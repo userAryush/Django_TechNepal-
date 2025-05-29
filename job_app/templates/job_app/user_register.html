@@ -1,4 +1,4 @@
-{% extends "bootstrap.html" %}
+{% extends "layout.html" %}
 {% block content %}
     {% load static %}
     <div class="container py-5">
@@ -11,82 +11,53 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form id="voterForm">
+                    <form method="post">
                         {% csrf_token %}
                         <!-- First Name -->
                         <div class="mb-3">
                             <label for="firstName" class="form-label">
                                 First Name <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" id="firstName" />
-                            <span class="error-message text-danger small"></span>
-                        </div>
-                        <!-- Middle Name -->
-                        <div class="mb-3">
-                            <label for="middleName" class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" id="middleName" />
-                            <span class="error-message text-danger small"></span>
+                            <input type="text" class="form-control" name="firstName" id="firstName" required />
+                            
                         </div>
                         <!-- Last Name -->
                         <div class="mb-3">
                             <label for="lastName" class="form-label">
                                 Last Name <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" id="lastName" />
-                            <span class="error-message text-danger small"></span>
+                            <input type="text" class="form-control" name="lastName" id="lastName" required />                            
                         </div>
                         <!-- Username -->
                         <div class="mb-3">
                             <label for="username" class="form-label">
                                 Username <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" id="username" />
-                            <span class="error-message text-danger small"></span>
+                            <input type="text" class="form-control" name="username" id="username" required />
+                            
                         </div>
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">
                                 Email <span class="text-danger">*</span>
                             </label>
-                            <input type="email" class="form-control" id="email" />
-                            <span class="error-message text-danger small"></span>
+                            <input type="email" class="form-control" name="email" id="email" required />
+                            
                         </div>
-
-                        <!-- Photo Upload -->
                         <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-camera"></i> User Photo <span class="text-danger">*</span>
+                            <label for="password" class="form-label">
+                                Password <span class="text-danger">*</span>
                             </label>
-                            <div id="drop-area"
-                                 class="upload-box upload-box-narrow border rounded d-flex justify-content-center align-items-center flex-column p-4 text-center">
-                                <input type="file" id="userPhotoUpload" accept="image/*" hidden />
-                                <span class="error-message text-danger small"></span>
-                                <div class="upload-icon mb-2">
-                                    <i class="bi bi-upload fs-1"></i>
-                                </div>
-                                <p>
-                                    Drag & drop your photo here or
-                                    <span class="text-primary text-decoration-underline" id="clickToBrowse">click to browse</span>
-
-                                </p>
-                                <small class="text-muted">Please upload a recent photo (max 2MB)</small>
-                                <!-- Preview Image -->
-                                <img id="userPhotoPreview"
-                                     src=""
-                                     alt="User Photo Preview"
-                                     width="150"
-                                     height="auto" />
-                            </div>
+                            <input type="password" class="form-control" name="password" id="password" required />
+                            
                         </div>
                         
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary px-4">Submit</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <!-- JS -->
-    <script src="{% static 'js/registration.js' %}"></script>
 {% endblock content %}

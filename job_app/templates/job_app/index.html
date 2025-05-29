@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% load static %}
+    <div id="hero-section">
+        <div class="container">
+            <h1 class="hero-title">IT in Nepal</h1>
+            <p class="hero-subtitle">Explore! Apply! IT Jobs and Companies   </p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}" class="btn btn-primary">Explore</a>
+            {% else %}
+                <a href="{% url 'user_log' %}" class="btn btn-primary">Explore</a>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock content %}

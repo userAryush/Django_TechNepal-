@@ -1,9 +1,17 @@
-{% extends "bootstrap.html" %}
+{% extends "layout.html" %}
 {% load static %}
 {% block title %}Login{% endblock %}
 {% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
 <div class="center-container">
-    <form class="login-form">
+    <form method="post" class="post">
+
             {% csrf_token %}
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -22,9 +30,7 @@
                            id="password"
                            class="form-control"
                            required />
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            onclick="togglePassword()">Show</button>
+                    
                 </div>
             </div>
             <div class="mb-3 text-end">
@@ -40,5 +46,5 @@
     </div>
 
     {% include "job_app/forgot_password.html" %}
-    <script src="{% static 'js/login.js' %}"></script>
+    {% comment %} <script src="{% static 'js/login.js' %}"></script> {% endcomment %}
 {% endblock content %}

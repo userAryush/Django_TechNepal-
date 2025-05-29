@@ -1,0 +1,77 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <!-- Logo on the Left -->
+
+        <a class="navbar-brand d-flex align-items-center"
+           href="{% url 'index' %}">
+            <img src="{% static 'images/logo.png' %}"
+                 alt="Logo"
+                 width="50"
+                 height="50"
+                 class="me-2" />
+                                 <span class="text-dark"> Tech<span class="text-success">नेपाल:</span> </span>
+        </a>
+        
+        <!-- Right Side Content (Login or Profile) -->
+        <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+                            <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'job' %}">Jobs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'company' %}">Companies</a>
+                        </li>
+                        </ul>
+                    </div>
+                     <img src="{{ user.avatar.url }}"
+                         alt="Avatar"
+                         class="rounded-circle mb-2"
+                         role="button"
+                         aria-expanded="false"
+                         height="50"
+                         width="50"
+                         onerror="this.onerror=null; this.src='{% static "images/avatar.svg" %}';" />                  
+                         <h4>{{ user.username }}</h4>
+                    <select class="form-select w-auto" onchange="handleDropdownChange(this)">
+                    <option selected disabled>Settings</option>
+                    <option value="{% url 'user-profile' %}">Profile</option>
+                    {% if user.is_staff %}
+                        <option value="{% url 'admin:index' %}">Admin Panel</option>
+                    {% endif %}
+                    <option value="{% url 'logout_view' %}">Log Out</option>
+                    </select>
+
+                    <script>
+                    function handleDropdownChange(select) {
+                        const url = select.value;
+                        if (url) {
+                        window.location.href = url;
+                        }
+                    }
+                    </script>
+
+
+            {% else %}
+                {% if request.resolver_match.url_name == 'index' %}
+                    <a class="btn btn-primary" href="{% url 'user_registration' %}">SignUp</a>
+                    <div class="vr mx-2"></div>
+                    <a class="btn btn-success" href="{% url 'user_log' %}">Login</a>
+                {% endif %}
+                {% if request.resolver_match.url_name == 'user_log' %}
+                    <a class="btn btn-primary" href="{% url 'user_registration' %}">SignUp</a>
+                {% elif request.resolver_match.url_name == 'user_registration' %}
+                    <a class="btn btn-success" href="{% url 'user_log' %}">Login</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</nav>
