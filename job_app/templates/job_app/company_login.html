@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% load static %}
-{% block title %}Seeker Login{% endblock %}
+{% block title %}Company Login{% endblock %}
 {% block content %}
 <p class="d-inline-flex gap-1">
-  <a class="btn disabled" aria-disabled="true" role="button">Seeker</a>
-  <a href="{% url 'company_log' %}" class="btn btn-outline-primary" role="button">Company</a>
+  <a href="{% url 'user_log' %}" class="btn btn-outline-primary" role="button">Seeker</a>
+  <a class="btn disabled" aria-disabled="true" role="button">Company</a>
 </p>
 
 <div class="center-container">

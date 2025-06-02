@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
     {% load static %}
+    
+    <p class="d-inline-flex gap-1">
+        <a class="btn disabled" aria-disabled="true" role="button">Seeker</a>
+        <a href="{% url 'company_registration' %}" class="btn btn-outline-primary" role="button">Company</a>
+    </p>
     <div class="container py-5">
         <!-- Form Card -->
         <div class="d-flex justify-content-center">

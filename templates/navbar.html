@@ -71,6 +71,11 @@
                 {% elif request.resolver_match.url_name == 'user_registration' %}
                     <a class="btn btn-success" href="{% url 'user_log' %}">Login</a>
                 {% endif %}
+                {% if request.resolver_match.url_name == 'company_log' %}
+                    <a class="btn btn-primary" href="{% url 'company_registration' %}">SignUp</a>
+                {% elif request.resolver_match.url_name == 'company_registration' %}
+                    <a class="btn btn-success" href="{% url 'company_log' %}">Login</a>
+                {% endif %}
             {% endif %}
         </div>
     </div>

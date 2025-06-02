@@ -1,0 +1,39 @@
+/* Hero section styling with background */
+#hero-section {
+    background: url("../images/herosectiontech.jpg");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    height: 72.3vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 30px;
+}
+
+.hero-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: black;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: black;
+}
+.mx-auto {
+    margin-right: auto !important;
+    /* margin-left: auto !important; */
+}
+
+.col-6 {
+    flex: 0 0 auto;
+    width: 40%;
+}
+/* .btn-custom {
+    font-size: 1.2rem;
+    padding: 12px 30px;
+    border-radius: 8px;
+    margin-right: 10px;
+} */

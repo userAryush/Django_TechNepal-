@@ -6,16 +6,71 @@ Home Page
 {% endblock %} 
 
 {% block content %}
+<style>
+    .heading {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+    }
+
+    .heading h1 {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .heading h6 {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-bottom: 30px;
+    }
+
+    .btn-group {
+        margin-bottom: 40px;
+    }
+
+    .btn-group .btn {
+        margin: 0 10px;
+        padding: 12px 25px;
+        font-size: 1rem;
+        border-radius: 30px;
+    }
+
+    .Image img {
+        border-radius: 15px;
+        box-shadow: 0px 4px 25px rgba(0, 0, 0, 0.1);
+        max-width: 100%;
+        height: auto;
+    }
+
+    @media (max-width: 768px) {
+        .heading h1 {
+            font-size: 2.2rem;
+        }
+
+        .btn-group .btn {
+            display: block;
+            width: 100%;
+            margin: 10px auto;
+        }
+    }
+</style>
+
 <div class="heading">
+    <h1>Nepal's Tech Community Hub</h1>
+    <h6>Discover IT jobs, tech events, and companies in Nepal - all in one place</h6>
 
-<h1> Nepal's Tech Community Hub</h1>
-<h6>Discover IT jobs, tech events, and companies in Nepal - all in one place</h6>
-<a href="{% url 'company' %}"><button type="button" class="btn btn-success">Explore Companies</button></a>
+    <div class="btn-group">
+        <a href="{% url 'company' %}">
+            <button type="button" class="btn btn-success">Explore Companies</button>
+        </a>
+        <a href="{% url 'job' %}">
+            <button type="button" class="btn btn-outline-dark">Explore Jobs</button>
+        </a>
+    </div>
 
-<a href="{% url 'job' %}"><button type="button" class="btn btn-light">Explore Jobs   </button></a>
-
-<div class="Image">
-<img src="{% static 'images/Laptop.jpeg' %}" alt="Logo" width="1140" height="600" >
-</div>
+    <div class="Image">
+        <img src="{% static 'images/Laptop.jpeg' %}" alt="Tech Community Image">
+    </div>
 </div>
 {% endblock %}

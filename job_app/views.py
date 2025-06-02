@@ -195,10 +195,10 @@ def logout_view(request):
 
 
 
-
+import json
 def company_registration(request):
     if request.method == 'GET':
-        return render(request, 'job_app/registration.html')
+        return render(request, 'job_app/company_register.html')
 
     if request.method == 'POST':
         # Collect fields
@@ -210,31 +210,39 @@ def company_registration(request):
         company_description = request.POST.get('company_description', '').strip()
         motto = request.POST.get('motto', '').strip()
         company_size = request.POST.get('company_size', '').strip()
-        services = request.POST.get('services', '').strip()
+        services_input = request.POST.get('services', '[]').strip()
         location = request.POST.get('location', '').strip()
         company_link = request.POST.get('company_link', '').strip()
-        company_picture = request.FILES.get('CompanyPhotoUpload')
-        
+
+        try:
+            services = json.loads(services_input)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid services JSON.'}, status=400)
 
         if Company.objects.filter(company_name=company_name).exists():
             return JsonResponse({'status': 'error', 'message': 'Company with this name already exists.'}, status=400)
         # Check email duplication
         if Company.objects.filter(company_email=company_email).exists():
             return JsonResponse({'status': 'error', 'message': 'Company with this email already exists.'}, status=400)
-        # Save uploaded images to static/images/company_picture/
-        upload_dir = os.path.join(settings.BASE_DIR, 'static/images/company_picture/')
-        os.makedirs(upload_dir, exist_ok=True)
-        fs = FileSystemStorage(location=upload_dir)
+        if Company.objects.filter(company_email=company_email).exists():
+            return JsonResponse({'status': 'error', 'message': 'Company with this email already exists.'}, status=400)
 
-        company_picture_name = fs.save(company_picture.name, company_picture)        
-        company_picture_path = f'company_picture/{company_picture_name}'
         
         # Generate credentials
         generated_password = generate_random_password()
         company_id = generate_random_unique_id()
+        
+        # Create User
+        user = User.objects.create_user(
+            username=company_name.replace(" ", "_")[:30],  # limit username length
+            email=company_email,
+            password=generated_password,
+            user_type='E'
+        )
 
         # Create company
-        company = User.objects.create_user(
+        company = Company.objects.create(
+            user=user,
             company_name=company_name,
             company_email=company_email,
             company_id=company_id,
@@ -242,15 +250,12 @@ def company_registration(request):
             founder=founder,
             founded=founded,
             company_description=company_description,
-            motto=motto,
-            
-            
+            motto=motto,            
             company_size=company_size,
             services=services,
             location=location,
             company_link=company_link,
-            company_picture=company_picture_path,
-            password=generated_password,
+
         )
         # Send welcome email
         subject = "Welcome to Techनेपाल:!"
@@ -267,32 +272,34 @@ def company_registration(request):
             "Best regards,\nTechनेपाल: Team"
         )
         try:
-            send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [company.email])
+            send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email])
         except Exception as e:
             company.delete()  # Rollback user creation if email fails
             return JsonResponse({'status': 'error', 'message': f'Failed to send email to {company.company_email}: {e}'}, status=500)
-        return JsonResponse({'status': 'success', 'message': 'Registration successful! Check your email for login details.', 'redirect_url': reverse('company_log')})
-
+        messages.success(request, f"{company_name}'s account created successfully.")
+        return redirect('company_log')
 def login_view_company(request):
-    if 'next' in request.GET:
-        messages.warning(request, 'User should be logged in to view this page.')
     if request.user.is_authenticated:
-        return redirect("dashboard")
-    if request.method == "POST":
-        email = request.POST.get("company_email")
-        password = request.POST.get("password")
-        try:
-            company = Company.objects.get(company_email=email)
-        except User.DoesNotExist:
-            return JsonResponse({'success': False, 'error': "Company not found."})
-        company = authenticate(request, email=email, password=password)
-        if company is not None:
+        return redirect('home')
+    else:
+        
+        if request.method == "POST":
+            email = request.POST.get("email")
+            password = request.POST.get("password")
             
-            return JsonResponse({
-                'success': True,
-                'message': 'Login successful.',
-                
-            })
-        else:
-            return JsonResponse({'success': False, 'error': "Invalid credentials."})
-    return render(request, 'job_app/user_login.html')
+            user = authenticate(request, username=email, password=password)
+            if user:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.info(request, "Invalid email or password.")
+
+        return render(request, 'job_app/company_login.html')
+    
+    
+    
+@login_required
+def company_home(request):
+    jobs = Job.objects.filter(company_name= request.user.company_name)
+ 
+    return render(request, 'job_app/company_home.html',{'jobs':jobs})

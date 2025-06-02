@@ -24,10 +24,11 @@ class User(AbstractUser):
     
     
 class Company(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'E'}, default=1)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'E'})
+
     company_name = models.CharField(max_length=250)
     company_email = models.EmailField(max_length=200,unique=True,default="Put your company email")
-    company_id=models.IntegerField(unique=True,default=1)
+    company_id=models.CharField(unique=True,default=1)
     main_service = models.CharField(max_length=200, default="IT Service")
     founder = models.CharField(max_length=400, default="Aryush Khatri")
     founded = models.DateField(null=True, blank=True)

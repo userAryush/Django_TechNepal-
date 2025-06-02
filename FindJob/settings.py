@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_auto_logout.middleware.auto_logout',
 ]
 
 ROOT_URLCONF = 'FindJob.urls'
@@ -142,8 +143,13 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 LOGIN_URL = '/login-user/'
+LOGOUT_REDIRECT_URL = "index"
+
+#pip install django-auto-logout and add a middleware
 AUTO_LOGOUT = {
     'IDLE_TIME': 300,
     'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
     'MESSAGE': 'The session has expired. Please login again to continue.',
 }
+
+
